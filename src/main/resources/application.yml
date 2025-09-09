@@ -1,0 +1,30 @@
+spring:
+  # 数据库连接配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver  # MySQL 驱动（8.0+ 需加 cj）
+    url: jdbc:mysql://localhost:3306/phone_repair?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8&useSSL=false
+    # 说明：url 中 phone_repair 是数据库名（后续需手动创建），GMT%2B8 表示北京时间
+    username: root  # 你的 MySQL 用户名
+    password: 1234  # 你的 MySQL 密码
+  # DevTools 热部署配置
+  devtools:
+    restart:
+      enabled: true  # 开启热部署
+      additional-paths: src/main/java  # 监听 Java 代码变更
+
+# 日志配置
+logging:
+  charset:
+    console: UTF-8  # 控制台日志编码
+  level:
+    com.yjx.mapper: trace  # 打印 Mapper 层的 SQL 日志（方便调试）
+
+# MyBatis 配置
+mybatis:
+  type-aliases-package: com.ai.pojo  # 给 pojo 包下的类起别名（XML 中可直接用类名）
+
+# 服务配置
+server:
+  port: 8081  # 项目启动端口（避免与其他服务冲突）
+  servlet:
+    context-path: /yjx  # 项目上下文路径（访问接口需加前缀，如 http://localhost:8081/yjx/xxx）
