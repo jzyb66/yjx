@@ -13,47 +13,30 @@ import org.springframework.stereotype.Service;
 @Service // 标记为服务层组件
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
+    // login 和 register 方法保持不变...
     @Override
     public LoginUser login(String usernameOrEmail, String password) {
-        // 1. 根据账号或邮箱查询用户（MyBatis-Plus的条件构造器）
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_name", usernameOrEmail) // 匹配用户名
-                .or() // 或
-                .eq("user_email", usernameOrEmail); // 匹配邮箱
-        User user = this.getOne(queryWrapper); // 执行查询
-
-        // 2. 校验用户是否存在
-        if (user == null) {
-            return null; // 用户名/邮箱不存在
-        }
-
-        // 3. 校验密码（MD5加密后比对，避免明文存储密码）
+        queryWrapper.eq("user_name", usernameOrEmail).or().eq("user_email", usernameOrEmail);
+        User user = this.getOne(queryWrapper);
+        if (user == null) return null;
         String encryptedPassword = Md5Password.generateMD5(password);
-        if (!encryptedPassword.equals(user.getUserPasswordHash())) {
-            return null; // 密码错误
-        }
-
-        // 4. 封装登录用户信息（返回给前端，隐藏敏感字段如密码）
+        if (!encryptedPassword.equals(user.getUserPasswordHash())) return null;
         LoginUser loginUser = new LoginUser();
         loginUser.setUserId(user.getUserId());
         loginUser.setUserName(user.getUserName());
         loginUser.setUserEmail(user.getUserEmail());
-        loginUser.setRoleId(user.getRoleId()); // 角色ID（用于后续权限控制）
+        loginUser.setRoleId(user.getRoleId());
         loginUser.setUserPhone(user.getUserPhone());
-
-        return loginUser; // 登录成功，返回用户信息
+        return loginUser;
     }
 
     @Override
     public Result<String> register(String userName, String userEmail, String userPasswordHash) {
-        //判断用户名是否已存在
-        User user = this.getOne(new QueryWrapper<User>().eq("user_name", userName));
-        if (user != null) {
+        if (this.getOne(new QueryWrapper<User>().eq("user_name", userName)) != null) {
             return Result.fail("用户名已存在", 400);
         }
-        //判断邮箱是否已存在
-        user = this.getOne(new QueryWrapper<User>().eq("user_email", userEmail));
-        if (user != null) {
+        if (this.getOne(new QueryWrapper<User>().eq("user_email", userEmail)) != null) {
             return Result.fail("邮箱已存在", 400);
         }
         User newUser = new User();
@@ -62,9 +45,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         newUser.setUserPasswordHash(Md5Password.generateMD5(userPasswordHash));
         newUser.setRoleId("2");
         boolean save = this.save(newUser);
-
         return save ? Result.success("注册成功") : Result.fail("注册失败", 500);
     }
-
-
+    
 }
