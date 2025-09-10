@@ -1,6 +1,8 @@
 package com.yjx.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yjx.module.CreateRepairModule;
+import com.yjx.module.DeleteRepairModule;
 import com.yjx.module.ReceptionistVO;
 import com.yjx.module.RepairQueryModule;
 import com.yjx.pojo.Repair;
@@ -19,18 +21,16 @@ public interface RepairService extends IService<Repair> {
     List<ReceptionistVO> getAllReceptionist();
 
     /**
-     * 创建一个新的维修请求
-     * @param repair 包含维修信息的对象
+     * 创建一个新的维修请求 (修改点)
+     * @param createRepairModule 包含新增信息的对象
      * @return Result object indicating success or failure
      */
-    Result<Void> createRepair(Repair repair);
+    Result<Void> createRepair(CreateRepairModule createRepairModule);
 
     /**
-     * 根据ID删除维修请求，并进行密码验证
-     * @param repairId 要删除的维修请求ID
-     * @param userId   执行操作的用户ID
-     * @param password 用户密码用于验证
+     * 根据ID删除维修请求，并进行密码验证 (修改点)
+     * @param deleteRepairModule 包含删除信息的对象
      * @return Result object indicating success or failure
      */
-    Result<Void> deleteRepair(Integer repairId, Integer userId, String password);
+    Result<Void> deleteRepair(DeleteRepairModule deleteRepairModule);
 }

@@ -43,7 +43,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         newUser.setUserName(userName);
         newUser.setUserEmail(userEmail);
         newUser.setUserPasswordHash(Md5Password.generateMD5(userPasswordHash));
-        newUser.setRoleId("2");
+        newUser.setRoleId(2);
         boolean save = this.save(newUser);
         return save ? Result.success("注册成功") : Result.fail("注册失败", 500);
     }

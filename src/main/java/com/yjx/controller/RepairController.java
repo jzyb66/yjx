@@ -1,20 +1,13 @@
 package com.yjx.controller;
 
+import com.yjx.module.CreateRepairModule;
+import com.yjx.module.DeleteRepairModule;
 import com.yjx.module.ReceptionistVO;
 import com.yjx.module.RepairQueryModule;
-// Import the Repair Pojo
-import com.yjx.pojo.Repair;
 import com.yjx.service.RepairService;
 import com.yjx.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
-// Import annotations for new methods
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -36,6 +29,7 @@ public class RepairController {
     public Result<Map<String, Object>> getAllRepair(@ModelAttribute RepairQueryModule repairQueryModule){
         return repairService.getAllRepairListByCondition(repairQueryModule);
     }
+
     /**
      * 获取所有接待员
      */
@@ -46,22 +40,21 @@ public class RepairController {
     }
 
     /**
-     * 新增维修订单
-     * Corresponds to the submitNewOrder() method in indexPage.js
+     * 新增维修订单 (修改点)
+     * 使用 CreateRepairModule 接收 JSON 请求体
      */
     @PostMapping("/createRepair")
-    public Result<Void> createRepair(@RequestBody Repair repair) {
-        return repairService.createRepair(repair);
+    public Result<Void> createRepair(@RequestBody CreateRepairModule createRepairModule) {
+        return repairService.createRepair(createRepairModule);
     }
 
     /**
-     * 删除维修订单
-     * Corresponds to the deleteOrder() method in indexPage.js
+     * 删除维修订单 (修改点)
+     * 使用 DeleteRepairModule 接收 URL 参数
+     * 注意：这里使用 @ModelAttribute 而不是 @RequestBody 是为了兼容您前端现有的 axios 用法 (params)
      */
     @PostMapping("/deleteRepair")
-    public Result<Void> deleteRepair(@RequestParam("repairId") Integer repairId,
-                                     @RequestParam("userId") Integer userId,
-                                     @RequestParam("password") String password) {
-        return repairService.deleteRepair(repairId, userId, password);
+    public Result<Void> deleteRepair(@ModelAttribute DeleteRepairModule deleteRepairModule) {
+        return repairService.deleteRepair(deleteRepairModule);
     }
 }

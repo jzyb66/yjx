@@ -19,7 +19,7 @@ public class LoginUser {
     private String userName;
     private String userEmail;
     private String userPassword;
-    private String roleId;
+    private Integer roleId;
     private String userStatus;
     private String userPhone;
     private String userGender;
