@@ -1,5 +1,7 @@
 package com.yjx.pojo;
 
+// Add this import
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,13 +14,17 @@ import java.time.LocalDateTime;
 /**
  * 用户实体类
  */
-@Data  // 自动生成getter和setter方法
-@TableName(value = "yjx_user")  // 指定数据库表名
-@Builder  // 构造器
-@AllArgsConstructor  // 全参构造函数
-@NoArgsConstructor  // 无参构造函数
+@Data
+@TableName(value = "yjx_user")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class User implements Serializable {
+
+    // Add this annotation to identify the primary key
+    @TableId
     private Integer userId;
+
     private String userName;
     private String userEmail;
     private String userPasswordHash;
@@ -30,5 +36,3 @@ public class User implements Serializable {
     private LocalDateTime userCreatedAt;
     private String userStatus;
 }
-
-

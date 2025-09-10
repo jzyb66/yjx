@@ -1,5 +1,8 @@
 package com.yjx.pojo;
 
+// 1. 确认这个 import 存在
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -9,16 +12,17 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-/**
- * 维修请求实体类
- */
 @Data
 @TableName(value = "yjx_repair_request")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Repair{
+
+    // 2. 确认注解是 @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.AUTO)
     private Integer requestId;
+
     private Integer userId;
     private Integer receptionistId;
     private String phoneModel;
@@ -27,8 +31,7 @@ public class Repair{
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    // 以下字段用于关联查询结果展示，不映射到数据库
     @TableField(exist = false)
-    private String receptionistName; // 接待员名称
+    private String receptionistName;
 
 }

@@ -2,12 +2,18 @@ package com.yjx.controller;
 
 import com.yjx.module.ReceptionistVO;
 import com.yjx.module.RepairQueryModule;
+// Import the Repair Pojo
+import com.yjx.pojo.Repair;
 import com.yjx.service.RepairService;
 import com.yjx.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+// Import annotations for new methods
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -37,5 +43,25 @@ public class RepairController {
     public Result<List<ReceptionistVO>> getAllReceptionist() {
         List<ReceptionistVO> receptionists = repairService.getAllReceptionist();
         return Result.success(receptionists);
+    }
+
+    /**
+     * 新增维修订单
+     * Corresponds to the submitNewOrder() method in indexPage.js
+     */
+    @PostMapping("/createRepair")
+    public Result<Void> createRepair(@RequestBody Repair repair) {
+        return repairService.createRepair(repair);
+    }
+
+    /**
+     * 删除维修订单
+     * Corresponds to the deleteOrder() method in indexPage.js
+     */
+    @PostMapping("/deleteRepair")
+    public Result<Void> deleteRepair(@RequestParam("repairId") Integer repairId,
+                                     @RequestParam("userId") Integer userId,
+                                     @RequestParam("password") String password) {
+        return repairService.deleteRepair(repairId, userId, password);
     }
 }

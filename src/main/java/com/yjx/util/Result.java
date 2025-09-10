@@ -27,10 +27,22 @@ public class Result<T> {
         result.setTimestamp(System.currentTimeMillis());
         return result;
     }
+
     // 成功返回（仅带数据，消息默认“操作成功”）
     public static <T> Result<T> success(T data) {
         return success("操作成功", data);
     }
+
+    // NEW: 成功返回（不带数据，消息默认“操作成功”）
+    public static <T> Result<T> success() {
+        return success("操作成功", null);
+    }
+
+    // NEW: 成功返回（仅带消息，不带数据）
+    public static <T> Result<T> success(String msg) {
+        return success(msg, null);
+    }
+
     /**
      * 失败响应的默认方法
      * @param msg 失败提示信息
