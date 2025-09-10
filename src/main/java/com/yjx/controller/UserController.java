@@ -2,20 +2,21 @@ package com.yjx.controller;
 
 import com.yjx.module.LoginUser;
 import com.yjx.module.RegisterUser;
+import com.yjx.module.ResetPasswordModule; // 1. 导入新模块
 import com.yjx.service.UserService;
 import com.yjx.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-@RestController // 标记为控制器，返回JSON数据
-@RequestMapping("/user") // 接口前缀：/user
+@RestController
+@RequestMapping("/user")
 public class UserController {
 
-    @Autowired // 自动注入UserService实例
+    @Autowired
     private UserService userService;
 
     /**
-     * 登录接口
+     * 登录接口 (保持不变)
      */
     @PostMapping("/login")
     public Result<LoginUser> login(
@@ -30,7 +31,7 @@ public class UserController {
     }
 
     /**
-     * 注册接口
+     * 注册接口 (保持不变)
      */
     @PostMapping("/createUser")
     public Result<String> register(@RequestBody RegisterUser registerUser) {
@@ -41,4 +42,17 @@ public class UserController {
         );
     }
 
+    /**
+     * 通过验证信息重置密码接口 (已修改为使用DTO)
+     */
+    @PostMapping("/resetPasswordByVerification")
+    // 2. 方法参数修改为接收 ResetPasswordModule 对象
+    public Result<String> resetPassword(@RequestBody ResetPasswordModule resetPasswordModule) {
+        // 3. 从 module 对象中获取数据传递给 service
+        return userService.resetPassword(
+                resetPasswordModule.getUsername(),
+                resetPasswordModule.getEmail(),
+                resetPasswordModule.getNewPassword()
+        );
+    }
 }

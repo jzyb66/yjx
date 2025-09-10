@@ -47,5 +47,32 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         boolean save = this.save(newUser);
         return save ? Result.success("注册成功") : Result.fail("注册失败", 500);
     }
-    
+
+    /**
+     * 新增：重置密码的实现
+     * @param username 用户名
+     * @param email 邮箱
+     * @param newPassword 新密码
+     * @return Result<String>
+     */
+    @Override
+    public Result<String> resetPassword(String username, String email, String newPassword) {
+        // 1. 根据用户名和邮箱查询用户
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_name", username);
+        queryWrapper.eq("user_email", email);
+        User user = this.getOne(queryWrapper);
+
+        // 2. 如果用户不存在，返回错误信息
+        if (user == null) {
+            return Result.fail("用户名与邮箱不匹配，请检查后重试。", 400);
+        }
+
+        // 3. 更新密码（MD5加密）
+        user.setUserPasswordHash(Md5Password.generateMD5(newPassword));
+        boolean updated = this.updateById(user);
+
+        // 4. 返回结果
+        return updated ? Result.success("密码重置成功！") : Result.fail("密码重置失败，请稍后再试。", 500);
+    }
 }

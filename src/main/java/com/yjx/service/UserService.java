@@ -13,4 +13,7 @@ public interface UserService extends IService<User> {
     // 注册方法
     Result<String> register(String userName, String userEmail, String userPasswordHash);
 
+    // 新增：重置密码方法
+    Result<String> resetPassword(String username, String email, String newPassword);
+
 }
