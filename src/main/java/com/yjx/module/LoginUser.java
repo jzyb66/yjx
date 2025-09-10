@@ -1,4 +1,4 @@
-package com.yjx.pojo;
+package com.yjx.module;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

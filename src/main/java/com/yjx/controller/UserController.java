@@ -1,7 +1,7 @@
 package com.yjx.controller;
 
-import com.yjx.pojo.LoginUser;
-import com.yjx.pojo.RegisterUser;
+import com.yjx.module.LoginUser;
+import com.yjx.module.RegisterUser;
 import com.yjx.service.UserService;
 import com.yjx.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;

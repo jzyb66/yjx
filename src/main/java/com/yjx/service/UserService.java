@@ -1,7 +1,7 @@
 package com.yjx.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.yjx.pojo.LoginUser;
+import com.yjx.module.LoginUser;
 import com.yjx.pojo.User;
 import com.yjx.util.Result;
 

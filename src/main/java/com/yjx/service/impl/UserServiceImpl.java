@@ -3,7 +3,7 @@ package com.yjx.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yjx.mapper.UserMapper;
-import com.yjx.pojo.LoginUser;
+import com.yjx.module.LoginUser;
 import com.yjx.pojo.User;
 import com.yjx.service.UserService;
 import com.yjx.util.Md5Password;
