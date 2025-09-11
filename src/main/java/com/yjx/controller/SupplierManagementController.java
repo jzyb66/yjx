@@ -50,12 +50,12 @@ public class SupplierManagementController {
     }
 
     /**
-     * 根据ID删除供应记录
+     * 【已修复】根据ID删除供应记录
      * @param deleteModule 表单参数
      * @return 操作结果
      */
     @PostMapping("/deleteSupplierManagement")
-    public Result<Void> delete(@ModelAttribute DeleteSupplierManagementModule deleteModule) {
+    public Result<Void> delete(@ModelAttribute DeleteSupplierManagementModule deleteModule) { // 【核心修改】确保这里是 @ModelAttribute
         return supplierManagementService.deleteSupplierManagement(deleteModule);
     }
 }

@@ -9,10 +9,10 @@ import com.yjx.module.*;
 import com.yjx.pojo.SupplierManagement;
 import com.yjx.pojo.User;
 import com.yjx.service.SupplierManagementService;
+import com.yjx.util.Md5Password; // 【核心修改】导入您项目自定义的MD5工具类
 import com.yjx.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -41,17 +41,12 @@ public class SupplierManagementServiceImpl extends ServiceImpl<SupplierManagemen
             queryModule.setSortOrder("desc");
         }
 
-        // 1. 从Mapper获取标准分页结果
         IPage<SupplierManagementVO> resultPage = supplierManagementMapper.selectSupplierManagementWithDetails(page, queryModule);
 
-        // 2. 创建一个新的Map，用于存放自定义格式的数据
         Map<String, Object> responseData = new HashMap<>();
+        responseData.put("supplierManagementList", resultPage.getRecords());
+        responseData.put("count", resultPage.getTotal());
 
-        // 3. 将分页数据放入Map中，并使用前端期望的键名
-        responseData.put("supplierManagementList", resultPage.getRecords()); // 使用 "supplierManagementList" 作为列表的键
-        responseData.put("count", resultPage.getTotal());                   // 使用 "count" 作为总数的键
-
-        // 4. 返回成功结果，将自定义的Map作为数据返回
         return Result.success(responseData);
     }
 
@@ -84,6 +79,9 @@ public class SupplierManagementServiceImpl extends ServiceImpl<SupplierManagemen
         return isSuccess ? Result.success() : Result.fail("更新供应记录失败。", 500);
     }
 
+    /**
+     * 【已修复】使用项目自定义的 Md5Password 工具类进行密码验证
+     */
     @Override
     public Result<Void> deleteSupplierManagement(DeleteSupplierManagementModule deleteModule) {
         if (deleteModule.getSupplierManagementId() == null || deleteModule.getUserId() == null || deleteModule.getUserPasswd() == null) {
@@ -94,7 +92,9 @@ public class SupplierManagementServiceImpl extends ServiceImpl<SupplierManagemen
         if (user == null) {
             return Result.fail("操作用户不存在。", 404);
         }
-        String encryptedPassword = DigestUtils.md5DigestAsHex(deleteModule.getUserPasswd().getBytes());
+
+        // 【核心修改】使用您项目中的 Md5Password.generateMD5 方法进行加密和比较
+        String encryptedPassword = Md5Password.generateMD5(deleteModule.getUserPasswd());
         if (!Objects.equals(user.getUserPasswordHash(), encryptedPassword)) {
             return Result.fail("密码错误，无权删除。", 403);
         }
