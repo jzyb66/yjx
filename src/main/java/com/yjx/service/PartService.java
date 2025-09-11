@@ -3,6 +3,7 @@ package com.yjx.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yjx.module.CreatePartModule;
+import com.yjx.module.DeletePartModule;
 import com.yjx.module.PartQueryModule;
 import com.yjx.module.UpdatePartModule;
 import com.yjx.pojo.Part;
@@ -35,9 +36,9 @@ public interface PartService extends IService<Part> {
     Result<Void> updatePart(UpdatePartModule updateModule);
 
     /**
-     * 根据ID删除配件记录
-     * @param partId 要删除的配件ID
+     * 【新】根据ID删除配件记录（带密码验证）
+     * @param deleteModule 包含删除信息的对象
      * @return 操作结果
      */
-    Result<Void> deletePartById(Integer partId);
+    Result<Void> deletePartWithPassword(DeletePartModule deleteModule);
 }
