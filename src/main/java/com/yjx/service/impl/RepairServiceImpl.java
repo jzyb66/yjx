@@ -33,31 +33,27 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
 
     @Override
     public Result<Map<String, Object>> getAllRepairListByCondition(RepairQueryModule repairQueryModule) {
-        // ... 此处代码无变化
+        // --- 修改点：规范化分页和排序参数 ---
         int pageNum = repairQueryModule.getPageNum() == null || repairQueryModule.getPageNum() < 1 ? 1 : repairQueryModule.getPageNum();
         int pageSize = repairQueryModule.getPageSize() == null || repairQueryModule.getPageSize() < 1 ? 10 : repairQueryModule.getPageSize();
         Page<Repair> page = new Page<>(pageNum, pageSize);
-        String searchKeyword = repairQueryModule.getSearchKeyword() == null ? "" : repairQueryModule.getSearchKeyword().trim();
-        String sortField = repairQueryModule.getSortField();
-        String sortOrder = repairQueryModule.getSortOrder();
-        if (sortField == null || sortField.trim().isEmpty()) {
-            sortField = "createdAt";
+
+        if (repairQueryModule.getSortField() == null || repairQueryModule.getSortField().trim().isEmpty()) {
+            repairQueryModule.setSortField("createdAt");
         }
-        if (sortOrder == null || (!"asc".equalsIgnoreCase(sortOrder) && !"desc".equalsIgnoreCase(sortOrder))) {
-            sortOrder = "desc";
+        if (repairQueryModule.getSortOrder() == null || (!"asc".equalsIgnoreCase(repairQueryModule.getSortOrder()) && !"desc".equalsIgnoreCase(repairQueryModule.getSortOrder()))) {
+            repairQueryModule.setSortOrder("desc");
         }
-        IPage<Repair> resultPage = repairMapper.selectRepairByCondition(
-                page,
-                repairQueryModule.getUserId(),
-                searchKeyword,
-                sortField,
-                sortOrder
-        );
+
+        // --- 修改点：直接传递整个Module对象到Mapper ---
+        IPage<Repair> resultPage = repairMapper.selectRepairByCondition(page, repairQueryModule);
+
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("repairRequest", resultPage.getRecords());
         responseMap.put("count", resultPage.getTotal());
         return Result.success(responseMap);
     }
+
 
     @Override
     public List<ReceptionistVO> getAllReceptionist() {
@@ -92,7 +88,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
         if (isSuccess) {
             return Result.success();
         } else {
-            return Result.fail("Failed to create repair order.", 500);
+            return Result.fail("创建订单失败。", 500);
         }
     }
 
