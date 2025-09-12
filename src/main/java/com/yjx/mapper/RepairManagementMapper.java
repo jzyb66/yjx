@@ -20,6 +20,7 @@ public interface RepairManagementMapper extends BaseMapper<RepairManagement> {
             SELECT
                 rm.repair_id,
                 rm.repair_request_id,
+                rm.technician_id,
                 rm.repair_notes,
                 rm.repair_price,
                 rm.payment_status,
