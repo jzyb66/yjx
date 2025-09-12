@@ -11,8 +11,6 @@ public class Role {
 
     @TableId(type = IdType.AUTO)
     private Integer roleId;
-
     private String roleName;
-
     private String roleDescription;
 }

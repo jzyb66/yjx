@@ -31,14 +31,15 @@ public class UserController {
     }
 
     /**
-     * 注册接口 (保持不变)
+     * 注册/创建用户接口
      */
     @PostMapping("/createUser")
     public Result<String> register(@RequestBody RegisterUser registerUser) {
+        // 修改：调用 getPassword() 方法而不是直接获取字段
         return userService.register(
                 registerUser.getUserName(),
                 registerUser.getUserEmail(),
-                registerUser.getUserPasswordHash()
+                registerUser.getPassword() // <--- 修改在这里
         );
     }
 

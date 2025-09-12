@@ -1,28 +1,17 @@
 package com.yjx.pojo;
 
-// Add this import
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * 用户实体类
- */
 @Data
 @TableName(value = "yjx_user")
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class User implements Serializable {
 
-    // Add this annotation to identify the primary key
-    @TableId
+    @TableId(type = IdType.AUTO)
     private Integer userId;
 
     private String userName;

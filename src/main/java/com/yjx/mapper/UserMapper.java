@@ -13,12 +13,6 @@ import org.apache.ibatis.annotations.Select;
 @Mapper
 public interface UserMapper extends BaseMapper<User> {
 
-    /**
-     * 根据条件分页查询用户列表（带角色名）
-     * @param page 分页对象
-     * @param query 查询条件
-     * @return 分页后的用户列表
-     */
     @Select("""
             <script>
             SELECT
