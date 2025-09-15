@@ -1,5 +1,6 @@
 package com.yjx.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -16,6 +17,7 @@ import com.yjx.util.Md5Password;
 import com.yjx.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 
@@ -28,7 +30,6 @@ public class PartServiceImpl extends ServiceImpl<PartMapper, Part> implements Pa
     @Autowired
     private UserMapper userMapper;
 
-    // getPartList 方法保持不变
     @Override
     public Result<IPage<Part>> getPartList(PartQueryModule queryModule) {
         int pageNum = queryModule.getPageNum() == null || queryModule.getPageNum() < 1 ? 1 : queryModule.getPageNum();
@@ -44,30 +45,23 @@ public class PartServiceImpl extends ServiceImpl<PartMapper, Part> implements Pa
         return Result.success(resultPage);
     }
 
-    /**
-     * 【最终版】创建配件方法
-     * 验证 supplier_id 是否在 yjx_user 表中存在且 role_id 为 5
-     */
     @Override
     public Result<Void> createPart(CreatePartModule createModule) {
-        // --- 最终验证逻辑开始 ---
-        Integer supplierId = createModule.getSupplierId();
-        if (supplierId == null) {
-            return Result.fail("供应商ID不能为空。", 400);
+        // --- 配件名称重复验证 ---
+        if (StringUtils.hasText(createModule.getPartName())) { //
+            QueryWrapper<Part> nameCheckWrapper = new QueryWrapper<>(); //
+            nameCheckWrapper.eq("part_name", createModule.getPartName()); //
+            if (partMapper.exists(nameCheckWrapper)) { //
+                return Result.fail("配件已存在", 409); //
+            }
         }
 
-        User supplier = userMapper.selectById(supplierId);
-
-        // 验证1：检查用户ID是否存在，解决数据库外键约束问题
-        if (supplier == null) {
-            return Result.fail("供应商ID不存在，请检查后重试。", 404);
+        // --- 供应商ID验证 ---
+        Integer supplierId = createModule.getSupplierId(); //
+        User supplier = (supplierId != null) ? userMapper.selectById(supplierId) : null; //
+        if (supplier == null || supplier.getRoleId() != 5) { //
+            return Result.fail("供应商不存在或无效", 400); //
         }
-
-        // 验证2：检查该用户角色是否为供应商 (role_id = 5)
-        if (supplier.getRoleId() != 5) {
-            return Result.fail("指定的用户ID不是供应商，请输入正确的供应商ID。", 400);
-        }
-        // --- 最终验证逻辑结束 ---
 
         Part part = new Part();
         part.setPartName(createModule.getPartName());
@@ -82,29 +76,31 @@ public class PartServiceImpl extends ServiceImpl<PartMapper, Part> implements Pa
         return isSuccess ? Result.success() : Result.fail("创建配件记录失败。", 500);
     }
 
-    /**
-     * 【最终版】更新配件方法
-     * 同样验证 supplier_id 是否在 yjx_user 表中存在且 role_id 为 5
-     */
     @Override
     public Result<Void> updatePart(UpdatePartModule updateModule) {
-        Part existingPart = this.getById(updateModule.getPartId());
-        if (existingPart == null) {
-            return Result.fail("未找到指定的配件记录。", 404);
+        Part existingPart = this.getById(updateModule.getPartId()); //
+        if (existingPart == null) { //
+            return Result.fail("未找到指定的配件记录。", 404); //
         }
 
-        // --- 最终验证逻辑开始 ---
-        Integer supplierId = updateModule.getSupplierId();
-        if (supplierId != null) {
-            User supplier = userMapper.selectById(supplierId);
-            if (supplier == null) {
-                return Result.fail("供应商ID不存在，请检查后重试。", 404);
-            }
-            if (supplier.getRoleId() != 5) {
-                return Result.fail("指定的用户ID不是供应商，请输入正确的供应商ID。", 400);
+        // --- 配件名称重复验证 ---
+        if (StringUtils.hasText(updateModule.getPartName())) { //
+            QueryWrapper<Part> nameCheckWrapper = new QueryWrapper<>(); //
+            nameCheckWrapper.eq("part_name", updateModule.getPartName()); //
+            nameCheckWrapper.ne("part_id", updateModule.getPartId()); //
+            if (partMapper.exists(nameCheckWrapper)) { //
+                return Result.fail("配件已存在", 409); //
             }
         }
-        // --- 最终验证逻辑结束 ---
+
+        // --- 供应商ID验证 ---
+        Integer supplierId = updateModule.getSupplierId(); //
+        if (supplierId != null) { //
+            User supplier = userMapper.selectById(supplierId); //
+            if (supplier == null || supplier.getRoleId() != 5) { //
+                return Result.fail("供应商不存在或无效", 400); //
+            }
+        }
 
         existingPart.setPartName(updateModule.getPartName());
         existingPart.setPartDescription(updateModule.getPartDescription());
@@ -117,7 +113,6 @@ public class PartServiceImpl extends ServiceImpl<PartMapper, Part> implements Pa
         return isSuccess ? Result.success() : Result.fail("更新配件记录失败。", 500);
     }
 
-    // deletePartWithPassword 方法保持不变
     @Override
     public Result<Void> deletePartWithPassword(DeletePartModule deleteModule) {
         Integer partId = deleteModule.getPartId();
