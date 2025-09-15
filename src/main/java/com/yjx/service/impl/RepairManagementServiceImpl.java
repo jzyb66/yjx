@@ -98,7 +98,7 @@ public class RepairManagementServiceImpl extends ServiceImpl<RepairManagementMap
         repairManagement.setRepairNotes(createModule.getRepairNotes());
         repairManagement.setTechnicianId(createModule.getTechnicianId());
         repairManagement.setPaymentStatus("待支付");
-        repairManagement.setRepairPrice(new BigDecimal("0.00"));
+        repairManagement.setRepairPrice(new BigDecimal("100.00"));
         repairManagement.setCreatedAt(LocalDateTime.now());
         repairManagement.setUpdatedAt(LocalDateTime.now());
 
