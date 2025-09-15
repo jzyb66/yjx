@@ -7,10 +7,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yjx.mapper.RepairManagementMapper;
 import com.yjx.mapper.RepairMapper;
 import com.yjx.mapper.UserMapper;
-import com.yjx.module.CreateRepairManagementModule;
-import com.yjx.module.DeleteRepairManagementModule;
-import com.yjx.module.RepairManagementQueryModule;
-import com.yjx.module.UpdateRepairManagementModule;
+import com.yjx.module.CreateRepairManagementDTO;
+import com.yjx.module.DeleteRepairManagementDTO;
+import com.yjx.module.RepairManagementQueryDTO;
+import com.yjx.module.UpdateRepairManagementDTO;
 import com.yjx.pojo.Repair;
 import com.yjx.pojo.RepairManagement;
 import com.yjx.pojo.User;
@@ -38,7 +38,7 @@ public class RepairManagementServiceImpl extends ServiceImpl<RepairManagementMap
     private RepairMapper repairMapper;
 
     @Override
-    public Result<Map<String, Object>> getAllRepairManagementList(RepairManagementQueryModule queryModule) {
+    public Result<Map<String, Object>> getAllRepairManagementList(RepairManagementQueryDTO queryModule) {
         int pageNum = queryModule.getPageNum() == null || queryModule.getPageNum() < 1 ? 1 : queryModule.getPageNum();
         int pageSize = queryModule.getPageSize() == null || queryModule.getPageSize() < 1 ? 10 : queryModule.getPageSize();
         Page<RepairManagement> page = new Page<>(pageNum, pageSize);
@@ -78,7 +78,7 @@ public class RepairManagementServiceImpl extends ServiceImpl<RepairManagementMap
 
     @Override
     @Transactional
-    public Result<Void> createRepairManagement(CreateRepairManagementModule createModule) {
+    public Result<Void> createRepairManagement(CreateRepairManagementDTO createModule) {
         QueryWrapper<RepairManagement> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("repair_request_id", createModule.getRepairRequestId());
         if (this.count(queryWrapper) > 0) {
@@ -107,7 +107,7 @@ public class RepairManagementServiceImpl extends ServiceImpl<RepairManagementMap
     }
 
     @Override
-    public Result<Void> updateRepairManagement(UpdateRepairManagementModule updateModule) {
+    public Result<Void> updateRepairManagement(UpdateRepairManagementDTO updateModule) {
         RepairManagement existingRecord = this.getById(updateModule.getRepairId());
         if (existingRecord == null) {
             return Result.fail("未找到指定的维修记录。", 404);
@@ -124,7 +124,7 @@ public class RepairManagementServiceImpl extends ServiceImpl<RepairManagementMap
     }
 
     @Override
-    public Result<Void> deleteRepairManagement(DeleteRepairManagementModule deleteModule) {
+    public Result<Void> deleteRepairManagement(DeleteRepairManagementDTO deleteModule) {
         Integer repairId = deleteModule.getRepairId();
         Integer userId = deleteModule.getUserId();
         String password = deleteModule.getUserPasswd();

@@ -7,7 +7,7 @@ import java.math.BigDecimal;
  * 接收创建配件记录请求参数的 Module
  */
 @Data
-public class CreatePartModule {
+public class CreatePartDTO {
 
     private String partName;
     private String partDescription;

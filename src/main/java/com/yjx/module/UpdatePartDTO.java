@@ -7,7 +7,7 @@ import java.math.BigDecimal;
  * 接收更新配件记录请求参数的 Module
  */
 @Data
-public class UpdatePartModule {
+public class UpdatePartDTO {
 
     private Integer partId; // 必须字段，用于定位要更新的记录
     private String partName;

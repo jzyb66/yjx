@@ -6,7 +6,7 @@ import lombok.Data;
  * 接收供应商管理记录查询参数的 Module
  */
 @Data
-public class SupplierManagementQueryModule {
+public class SupplierManagementQueryDTO {
     private String searchKeyword;
     private Integer pageNum;
     private Integer pageSize;

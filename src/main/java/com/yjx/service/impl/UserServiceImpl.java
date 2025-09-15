@@ -6,8 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yjx.mapper.UserMapper;
 import com.yjx.module.LoginUser;
-import com.yjx.module.UpdateUserModule;
-import com.yjx.module.UserQueryModule;
+import com.yjx.module.UpdateUserDTO;
+import com.yjx.module.UserQueryDTO;
 import com.yjx.module.UserVO;
 import com.yjx.pojo.User;
 import com.yjx.service.UserService;
@@ -76,7 +76,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     // --- 新增的管理方法实现 ---
 
     @Override
-    public Map<String, Object> getAllUsers(UserQueryModule query) {
+    public Map<String, Object> getAllUsers(UserQueryDTO query) {
         Page<UserVO> page = new Page<>(query.getPageNum(), query.getPageSize());
 
         String sortField = query.getSortField();
@@ -96,13 +96,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public Result<String> updateUser(UpdateUserModule updateUserModule) {
-        User user = this.getById(updateUserModule.getUserId());
+    public Result<String> updateUser(UpdateUserDTO updateUserDTO) {
+        User user = this.getById(updateUserDTO.getUserId());
         if (user == null) {
             return Result.fail("用户不存在", 404);
         }
 
-        BeanUtils.copyProperties(updateUserModule, user);
+        BeanUtils.copyProperties(updateUserDTO, user);
 
         boolean success = this.updateById(user);
         return success ? Result.success("更新成功") : Result.fail("更新失败", 500);

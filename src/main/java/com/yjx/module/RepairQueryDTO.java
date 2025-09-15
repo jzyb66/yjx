@@ -5,7 +5,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 
 @Data
-public class RepairQueryModule {
+public class RepairQueryDTO {
 
     private Integer userId;
     private Integer userRole;

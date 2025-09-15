@@ -29,7 +29,7 @@ public class SupplierManagementServiceImpl extends ServiceImpl<SupplierManagemen
     private UserMapper userMapper;
 
     @Override
-    public Result<Map<String, Object>> getSupplierManagementList(SupplierManagementQueryModule queryModule) {
+    public Result<Map<String, Object>> getSupplierManagementList(SupplierManagementQueryDTO queryModule) {
         int pageNum = queryModule.getPageNum() == null || queryModule.getPageNum() < 1 ? 1 : queryModule.getPageNum();
         int pageSize = queryModule.getPageSize() == null || queryModule.getPageSize() < 1 ? 10 : queryModule.getPageSize();
         Page<SupplierManagementVO> page = new Page<>(pageNum, pageSize);
@@ -51,7 +51,7 @@ public class SupplierManagementServiceImpl extends ServiceImpl<SupplierManagemen
     }
 
     @Override
-    public Result<Void> createSupplierManagement(CreateSupplierManagementModule createModule) {
+    public Result<Void> createSupplierManagement(CreateSupplierManagementDTO createModule) {
         SupplierManagement newRecord = new SupplierManagement();
         newRecord.setSupplierId(createModule.getSupplierId());
         newRecord.setPartId(createModule.getPartId());
@@ -64,7 +64,7 @@ public class SupplierManagementServiceImpl extends ServiceImpl<SupplierManagemen
     }
 
     @Override
-    public Result<Void> updateSupplierManagement(UpdateSupplierManagementModule updateModule) {
+    public Result<Void> updateSupplierManagement(UpdateSupplierManagementDTO updateModule) {
         SupplierManagement existingRecord = this.getById(updateModule.getSupplierManagementId());
         if (existingRecord == null) {
             return Result.fail("未找到指定的供应记录。", 404);
@@ -83,7 +83,7 @@ public class SupplierManagementServiceImpl extends ServiceImpl<SupplierManagemen
      * 【已修复】使用项目自定义的 Md5Password 工具类进行密码验证
      */
     @Override
-    public Result<Void> deleteSupplierManagement(DeleteSupplierManagementModule deleteModule) {
+    public Result<Void> deleteSupplierManagement(DeleteSupplierManagementDTO deleteModule) {
         if (deleteModule.getSupplierManagementId() == null || deleteModule.getUserId() == null || deleteModule.getUserPasswd() == null) {
             return Result.fail("参数不完整，无法删除。", 400);
         }

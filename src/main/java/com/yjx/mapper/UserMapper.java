@@ -3,7 +3,7 @@ package com.yjx.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.yjx.module.UserQueryModule;
+import com.yjx.module.UserQueryDTO;
 import com.yjx.module.UserVO;
 import com.yjx.pojo.User;
 import org.apache.ibatis.annotations.Mapper;
@@ -32,5 +32,5 @@ public interface UserMapper extends BaseMapper<User> {
             ORDER BY ${query.sortField} ${query.sortPart}
             </script>
             """)
-    IPage<UserVO> selectUserPage(Page<UserVO> page, @Param("query") UserQueryModule query);
+    IPage<UserVO> selectUserPage(Page<UserVO> page, @Param("query") UserQueryDTO query);
 }

@@ -6,7 +6,7 @@ import lombok.Data;
  * 接收维修管理页面查询参数的 Module
  */
 @Data
-public class RepairManagementQueryModule {
+public class RepairManagementQueryDTO {
 
     // 这两个字段用于权限校验，但在此次查询中可能不直接参与WHERE条件
     private Integer userId;

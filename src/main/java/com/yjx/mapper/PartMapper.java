@@ -3,7 +3,7 @@ package com.yjx.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.yjx.module.PartQueryModule;
+import com.yjx.module.PartQueryDTO;
 import com.yjx.pojo.Part;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -50,6 +50,6 @@ public interface PartMapper extends BaseMapper<Part> {
             """)
     IPage<Part> selectPartByCondition(
             Page<Part> page,
-            @Param("query") PartQueryModule query
+            @Param("query") PartQueryDTO query
     );
 }

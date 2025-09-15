@@ -5,10 +5,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yjx.mapper.RepairMapper;
 import com.yjx.mapper.UserMapper;
-import com.yjx.module.CreateRepairModule;
-import com.yjx.module.DeleteRepairModule;
+import com.yjx.module.CreateRepairDTO;
+import com.yjx.module.DeleteRepairDTO;
 import com.yjx.module.ReceptionistVO;
-import com.yjx.module.RepairQueryModule;
+import com.yjx.module.RepairQueryDTO;
 import com.yjx.pojo.Repair;
 import com.yjx.pojo.User;
 import com.yjx.service.RepairService;
@@ -32,21 +32,21 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     private UserMapper userMapper;
 
     @Override
-    public Result<Map<String, Object>> getAllRepairListByCondition(RepairQueryModule repairQueryModule) {
+    public Result<Map<String, Object>> getAllRepairListByCondition(RepairQueryDTO repairQueryDTO) {
         // --- 修改点：规范化分页和排序参数 ---
-        int pageNum = repairQueryModule.getPageNum() == null || repairQueryModule.getPageNum() < 1 ? 1 : repairQueryModule.getPageNum();
-        int pageSize = repairQueryModule.getPageSize() == null || repairQueryModule.getPageSize() < 1 ? 10 : repairQueryModule.getPageSize();
+        int pageNum = repairQueryDTO.getPageNum() == null || repairQueryDTO.getPageNum() < 1 ? 1 : repairQueryDTO.getPageNum();
+        int pageSize = repairQueryDTO.getPageSize() == null || repairQueryDTO.getPageSize() < 1 ? 10 : repairQueryDTO.getPageSize();
         Page<Repair> page = new Page<>(pageNum, pageSize);
 
-        if (repairQueryModule.getSortField() == null || repairQueryModule.getSortField().trim().isEmpty()) {
-            repairQueryModule.setSortField("createdAt");
+        if (repairQueryDTO.getSortField() == null || repairQueryDTO.getSortField().trim().isEmpty()) {
+            repairQueryDTO.setSortField("createdAt");
         }
-        if (repairQueryModule.getSortOrder() == null || (!"asc".equalsIgnoreCase(repairQueryModule.getSortOrder()) && !"desc".equalsIgnoreCase(repairQueryModule.getSortOrder()))) {
-            repairQueryModule.setSortOrder("desc");
+        if (repairQueryDTO.getSortOrder() == null || (!"asc".equalsIgnoreCase(repairQueryDTO.getSortOrder()) && !"desc".equalsIgnoreCase(repairQueryDTO.getSortOrder()))) {
+            repairQueryDTO.setSortOrder("desc");
         }
 
         // --- 修改点：直接传递整个Module对象到Mapper ---
-        IPage<Repair> resultPage = repairMapper.selectRepairByCondition(page, repairQueryModule);
+        IPage<Repair> resultPage = repairMapper.selectRepairByCondition(page, repairQueryDTO);
 
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("repairRequest", resultPage.getRecords());
@@ -66,15 +66,15 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
      * 从 Module 映射到 Entity
      */
     @Override
-    public Result<Void> createRepair(CreateRepairModule createRepairModule) {
+    public Result<Void> createRepair(CreateRepairDTO createRepairDTO) {
         // 1. 创建数据库实体对象
         Repair repair = new Repair();
 
         // 2. 从 Module 中获取数据，设置到实体对象中
-        repair.setUserId(createRepairModule.getUserId());
-        repair.setReceptionistId(createRepairModule.getReceptionistId());
-        repair.setPhoneModel(createRepairModule.getPhoneModel());
-        repair.setPhoneIssueDescription(createRepairModule.getPhoneIssueDescription());
+        repair.setUserId(createRepairDTO.getUserId());
+        repair.setReceptionistId(createRepairDTO.getReceptionistId());
+        repair.setPhoneModel(createRepairDTO.getPhoneModel());
+        repair.setPhoneIssueDescription(createRepairDTO.getPhoneIssueDescription());
 
         // 3. 设置服务器端生成的默认值
         repair.setRequestId(null); // 强制使用数据库自增ID
@@ -97,11 +97,11 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
      * 从 Module 中获取参数
      */
     @Override
-    public Result<Void> deleteRepair(DeleteRepairModule deleteRepairModule) {
+    public Result<Void> deleteRepair(DeleteRepairDTO deleteRepairDTO) {
         // 从 Module 对象中获取参数
-        Integer repairId = deleteRepairModule.getRepairId();
-        Integer userId = deleteRepairModule.getUserId();
-        String password = deleteRepairModule.getPassword();
+        Integer repairId = deleteRepairDTO.getRepairId();
+        Integer userId = deleteRepairDTO.getUserId();
+        String password = deleteRepairDTO.getPassword();
 
         // 1. 根据 userId 查找用户
         User user = userMapper.selectById(userId);

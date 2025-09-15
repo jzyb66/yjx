@@ -2,8 +2,8 @@ package com.yjx.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yjx.module.LoginUser;
-import com.yjx.module.UpdateUserModule;
-import com.yjx.module.UserQueryModule;
+import com.yjx.module.UpdateUserDTO;
+import com.yjx.module.UserQueryDTO;
 import com.yjx.pojo.User;
 import com.yjx.util.Result;
 
@@ -27,14 +27,14 @@ public interface UserService extends IService<User> {
      * @param query 查询参数
      * @return 包含用户列表和总数的 Map
      */
-    Map<String, Object> getAllUsers(UserQueryModule query);
+    Map<String, Object> getAllUsers(UserQueryDTO query);
 
     /**
      * 更新用户信息
-     * @param updateUserModule 待更新的用户数据
+     * @param updateUserDTO 待更新的用户数据
      * @return 操作结果
      */
-    Result<String> updateUser(UpdateUserModule updateUserModule);
+    Result<String> updateUser(UpdateUserDTO updateUserDTO);
 
     /**
      * 删除用户

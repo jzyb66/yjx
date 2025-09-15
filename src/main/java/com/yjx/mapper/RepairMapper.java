@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjx.module.ReceptionistVO;
-import com.yjx.module.RepairQueryModule;
+import com.yjx.module.RepairQueryDTO;
 import com.yjx.pojo.Repair;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -56,7 +56,7 @@ public interface RepairMapper extends BaseMapper<Repair> {
     """)
     IPage<Repair> selectRepairByCondition(
             Page<Repair> page,
-            @Param("query") RepairQueryModule query
+            @Param("query") RepairQueryDTO query
     );
 
     @Select("""

@@ -6,7 +6,7 @@ import lombok.Data;
  * 接收配件查询页面查询参数的 Module
  */
 @Data
-public class PartQueryModule {
+public class PartQueryDTO {
 
     private Integer userId;
     private Integer userRole;

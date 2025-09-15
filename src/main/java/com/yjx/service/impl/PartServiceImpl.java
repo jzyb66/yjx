@@ -6,10 +6,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yjx.mapper.PartMapper;
 import com.yjx.mapper.UserMapper;
-import com.yjx.module.CreatePartModule;
-import com.yjx.module.DeletePartModule;
-import com.yjx.module.PartQueryModule;
-import com.yjx.module.UpdatePartModule;
+import com.yjx.module.CreatePartDTO;
+import com.yjx.module.DeletePartDTO;
+import com.yjx.module.PartQueryDTO;
+import com.yjx.module.UpdatePartDTO;
 import com.yjx.pojo.Part;
 import com.yjx.pojo.User;
 import com.yjx.service.PartService;
@@ -31,7 +31,7 @@ public class PartServiceImpl extends ServiceImpl<PartMapper, Part> implements Pa
     private UserMapper userMapper;
 
     @Override
-    public Result<IPage<Part>> getPartList(PartQueryModule queryModule) {
+    public Result<IPage<Part>> getPartList(PartQueryDTO queryModule) {
         int pageNum = queryModule.getPageNum() == null || queryModule.getPageNum() < 1 ? 1 : queryModule.getPageNum();
         int pageSize = queryModule.getPageSize() == null || queryModule.getPageSize() < 1 ? 10 : queryModule.getPageSize();
         Page<Part> page = new Page<>(pageNum, pageSize);
@@ -46,7 +46,7 @@ public class PartServiceImpl extends ServiceImpl<PartMapper, Part> implements Pa
     }
 
     @Override
-    public Result<Void> createPart(CreatePartModule createModule) {
+    public Result<Void> createPart(CreatePartDTO createModule) {
         // --- 配件名称重复验证 ---
         if (StringUtils.hasText(createModule.getPartName())) { //
             QueryWrapper<Part> nameCheckWrapper = new QueryWrapper<>(); //
@@ -77,7 +77,7 @@ public class PartServiceImpl extends ServiceImpl<PartMapper, Part> implements Pa
     }
 
     @Override
-    public Result<Void> updatePart(UpdatePartModule updateModule) {
+    public Result<Void> updatePart(UpdatePartDTO updateModule) {
         Part existingPart = this.getById(updateModule.getPartId()); //
         if (existingPart == null) { //
             return Result.fail("未找到指定的配件记录。", 404); //
@@ -114,7 +114,7 @@ public class PartServiceImpl extends ServiceImpl<PartMapper, Part> implements Pa
     }
 
     @Override
-    public Result<Void> deletePartWithPassword(DeletePartModule deleteModule) {
+    public Result<Void> deletePartWithPassword(DeletePartDTO deleteModule) {
         Integer partId = deleteModule.getPartId();
         Integer userId = deleteModule.getUserId();
         String password = deleteModule.getPassword();

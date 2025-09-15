@@ -3,7 +3,7 @@ package com.yjx.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.yjx.module.SupplierManagementQueryModule;
+import com.yjx.module.SupplierManagementQueryDTO;
 import com.yjx.pojo.SupplierManagement;
 import com.yjx.module.SupplierManagementVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -53,6 +53,6 @@ public interface SupplierManagementMapper extends BaseMapper<SupplierManagement>
             """)
     IPage<SupplierManagementVO> selectSupplierManagementWithDetails(
             Page<SupplierManagementVO> page,
-            @Param("query") SupplierManagementQueryModule query
+            @Param("query") SupplierManagementQueryDTO query
     );
 }

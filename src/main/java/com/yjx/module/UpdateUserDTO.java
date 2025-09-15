@@ -3,7 +3,7 @@ package com.yjx.module;
 import lombok.Data;
 
 @Data
-public class UpdateUserModule {
+public class UpdateUserDTO {
     private Integer userId;
     private String userName;
     private String userEmail;

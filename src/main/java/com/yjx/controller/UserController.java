@@ -47,13 +47,13 @@ public class UserController {
      * 通过验证信息重置密码接口 (已修改为使用DTO)
      */
     @PostMapping("/resetPasswordByVerification")
-    // 2. 方法参数修改为接收 ResetPasswordModule 对象
-    public Result<String> resetPassword(@RequestBody ResetPasswordModule resetPasswordModule) {
+    // 2. 方法参数修改为接收 ResetPasswordTO 对象
+    public Result<String> resetPassword(@RequestBody ResetPasswordTO resetPasswordTO) {
         // 3. 从 module 对象中获取数据传递给 service
         return userService.resetPassword(
-                resetPasswordModule.getUsername(),
-                resetPasswordModule.getEmail(),
-                resetPasswordModule.getNewPassword()
+                resetPasswordTO.getUsername(),
+                resetPasswordTO.getEmail(),
+                resetPasswordTO.getNewPassword()
         );
     }
 
@@ -63,19 +63,19 @@ public class UserController {
      * @return 用户数据
      */
     @GetMapping("/getAllUsers")
-    public Result<Map<String, Object>> getAllUsers(@ModelAttribute UserQueryModule query) {
+    public Result<Map<String, Object>> getAllUsers(@ModelAttribute UserQueryDTO query) {
         Map<String, Object> data = userService.getAllUsers(query);
         return Result.success(data);
     }
 
     /**
      * 更新用户信息
-     * @param updateUserModule 用户更新数据
+     * @param updateUserDTO 用户更新数据
      * @return 操作结果
      */
     @PostMapping("/updateUser")
-    public Result<String> updateUser(@RequestBody UpdateUserModule updateUserModule) {
-        return userService.updateUser(updateUserModule);
+    public Result<String> updateUser(@RequestBody UpdateUserDTO updateUserDTO) {
+        return userService.updateUser(updateUserDTO);
     }
 
     /**

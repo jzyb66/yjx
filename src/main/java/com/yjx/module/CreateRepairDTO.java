@@ -6,7 +6,7 @@ import lombok.Data;
  * 接收创建维修订单请求参数的 Module
  */
 @Data
-public class CreateRepairModule {
+public class CreateRepairDTO {
 
     private Integer userId;
     private Integer receptionistId;

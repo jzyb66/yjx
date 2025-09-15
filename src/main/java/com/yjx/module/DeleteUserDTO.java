@@ -3,7 +3,7 @@ package com.yjx.module;
 import lombok.Data;
 
 @Data
-public class DeleteUserModule {
+public class DeleteUserDTO {
     private Integer adminId;
     private String adminPassword;
     private Integer userIdToDelete;

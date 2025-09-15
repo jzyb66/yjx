@@ -1,9 +1,9 @@
 package com.yjx.controller;
 
-import com.yjx.module.CreateRepairManagementModule;
-import com.yjx.module.DeleteRepairManagementModule;
-import com.yjx.module.RepairManagementQueryModule;
-import com.yjx.module.UpdateRepairManagementModule;
+import com.yjx.module.CreateRepairManagementDTO;
+import com.yjx.module.DeleteRepairManagementDTO;
+import com.yjx.module.RepairManagementQueryDTO;
+import com.yjx.module.UpdateRepairManagementDTO;
 import com.yjx.service.RepairManagementService;
 import com.yjx.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class RepairManagementController {
      * @return 包含列表和总数的结果
      */
     @GetMapping("/getAllRepairManagement")
-    public Result<Map<String, Object>> getAllRepairManagement(@ModelAttribute RepairManagementQueryModule queryModule) {
+    public Result<Map<String, Object>> getAllRepairManagement(@ModelAttribute RepairManagementQueryDTO queryModule) {
         return repairManagementService.getAllRepairManagementList(queryModule);
     }
 
@@ -37,7 +37,7 @@ public class RepairManagementController {
      * @return 操作结果
      */
     @PostMapping("/createRepairManagement")
-    public Result<Void> createRepairManagement(@RequestBody CreateRepairManagementModule createModule) {
+    public Result<Void> createRepairManagement(@RequestBody CreateRepairManagementDTO createModule) {
         return repairManagementService.createRepairManagement(createModule);
     }
 
@@ -47,7 +47,7 @@ public class RepairManagementController {
      * @return 操作结果
      */
     @PostMapping("/updateRepairManagement")
-    public Result<Void> updateRepairManagement(@RequestBody UpdateRepairManagementModule updateModule) {
+    public Result<Void> updateRepairManagement(@RequestBody UpdateRepairManagementDTO updateModule) {
         return repairManagementService.updateRepairManagement(updateModule);
     }
 
@@ -57,7 +57,7 @@ public class RepairManagementController {
      * @return 操作结果
      */
     @PostMapping("/deleteRepairManagement")
-    public Result<Void> deleteRepairManagement(@ModelAttribute DeleteRepairManagementModule deleteModule) {
+    public Result<Void> deleteRepairManagement(@ModelAttribute DeleteRepairManagementDTO deleteModule) {
         return repairManagementService.deleteRepairManagement(deleteModule);
     }
 }

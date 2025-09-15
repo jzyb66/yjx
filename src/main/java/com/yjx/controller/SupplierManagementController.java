@@ -1,6 +1,5 @@
 package com.yjx.controller;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yjx.module.*;
 import com.yjx.service.SupplierManagementService;
 import com.yjx.util.Result;
@@ -25,7 +24,7 @@ public class SupplierManagementController {
      * @return 包含列表和总数的自定义Map结果
      */
     @GetMapping("/getAllSupplierManagement")
-    public Result<Map<String, Object>> getList(@ModelAttribute SupplierManagementQueryModule queryModule) { // <--- 返回类型已修改
+    public Result<Map<String, Object>> getList(@ModelAttribute SupplierManagementQueryDTO queryModule) { // <--- 返回类型已修改
         return supplierManagementService.getSupplierManagementList(queryModule);
     }
 
@@ -35,7 +34,7 @@ public class SupplierManagementController {
      * @return 操作结果
      */
     @PostMapping("/createSupplierManagement")
-    public Result<Void> create(@RequestBody CreateSupplierManagementModule createModule) {
+    public Result<Void> create(@RequestBody CreateSupplierManagementDTO createModule) {
         return supplierManagementService.createSupplierManagement(createModule);
     }
 
@@ -45,7 +44,7 @@ public class SupplierManagementController {
      * @return 操作结果
      */
     @PostMapping("/updateSupplierManagement")
-    public Result<Void> update(@RequestBody UpdateSupplierManagementModule updateModule) {
+    public Result<Void> update(@RequestBody UpdateSupplierManagementDTO updateModule) {
         return supplierManagementService.updateSupplierManagement(updateModule);
     }
 
@@ -55,7 +54,7 @@ public class SupplierManagementController {
      * @return 操作结果
      */
     @PostMapping("/deleteSupplierManagement")
-    public Result<Void> delete(@ModelAttribute DeleteSupplierManagementModule deleteModule) { // 【核心修改】确保这里是 @ModelAttribute
+    public Result<Void> delete(@ModelAttribute DeleteSupplierManagementDTO deleteModule) { // 【核心修改】确保这里是 @ModelAttribute
         return supplierManagementService.deleteSupplierManagement(deleteModule);
     }
 }

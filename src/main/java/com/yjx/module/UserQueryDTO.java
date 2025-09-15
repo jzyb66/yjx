@@ -3,7 +3,7 @@ package com.yjx.module;
 import lombok.Data;
 
 @Data
-public class UserQueryModule {
+public class UserQueryDTO {
     private String searchKeyword;
     private int pageNum = 1;
     private int pageSize = 10;
