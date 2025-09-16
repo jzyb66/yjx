@@ -12,52 +12,60 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 /**
- * 维修管理控制器
+ * 后台维修管理API控制器。
+ * 负责处理维修流程中的具体管理操作，如分配技师、更新状态、记录价格等。
  */
 @RestController
-@RequestMapping("/management") // 基础路径与前端JS代码中的URL匹配
+@RequestMapping("/management")
 public class RepairManagementController {
 
+    /**
+     * 自动注入维修管理服务层的Bean。
+     */
     @Autowired
     private RepairManagementService repairManagementService;
 
     /**
-     * 获取所有维修管理记录（支持分页和搜索）
-     * @param queryModule 查询参数
-     * @return 包含列表和总数的结果
+     * 获取所有维修管理记录，支持分页和关键字搜索。
+     *
+     * @param queryDTO 包含分页、排序和搜索关键字的查询参数对象。
+     * @return 包含维修管理记录列表和总记录数的结果Map。
      */
     @GetMapping("/getAllRepairManagement")
-    public Result<Map<String, Object>> getAllRepairManagement(@ModelAttribute RepairManagementQueryDTO queryModule) {
-        return repairManagementService.getAllRepairManagementList(queryModule);
+    public Result<Map<String, Object>> getAllRepairManagement(@ModelAttribute RepairManagementQueryDTO queryDTO) {
+        return repairManagementService.getAllRepairManagementList(queryDTO);
     }
 
     /**
-     * 创建新的维修管理记录
-     * @param createModule JSON请求体
-     * @return 操作结果
+     * 创建一条新的维修管理记录。
+     *
+     * @param createDTO 包含创建维修管理记录所需信息的DTO对象。
+     * @return 表示操作成功或失败的结果对象。
      */
     @PostMapping("/createRepairManagement")
-    public Result<Void> createRepairManagement(@RequestBody CreateRepairManagementDTO createModule) {
-        return repairManagementService.createRepairManagement(createModule);
+    public Result<Void> createRepairManagement(@RequestBody CreateRepairManagementDTO createDTO) {
+        return repairManagementService.createRepairManagement(createDTO);
     }
 
     /**
-     * 更新已有的维修管理记录
-     * @param updateModule JSON请求体
-     * @return 操作结果
+     * 更新一条已有的维修管理记录。
+     *
+     * @param updateDTO 包含待更新记录ID和新信息的DTO对象。
+     * @return 表示操作成功或失败的结果对象。
      */
     @PostMapping("/updateRepairManagement")
-    public Result<Void> updateRepairManagement(@RequestBody UpdateRepairManagementDTO updateModule) {
-        return repairManagementService.updateRepairManagement(updateModule);
+    public Result<Void> updateRepairManagement(@RequestBody UpdateRepairManagementDTO updateDTO) {
+        return repairManagementService.updateRepairManagement(updateDTO);
     }
 
     /**
-     * 删除维修管理记录
-     * @param deleteModule URL参数
-     * @return 操作结果
+     * 删除一条维修管理记录。
+     *
+     * @param deleteDTO 包含待删除记录ID和用户验证信息的DTO对象。
+     * @return 表示操作成功或失败的结果对象。
      */
     @PostMapping("/deleteRepairManagement")
-    public Result<Void> deleteRepairManagement(@ModelAttribute DeleteRepairManagementDTO deleteModule) {
-        return repairManagementService.deleteRepairManagement(deleteModule);
+    public Result<Void> deleteRepairManagement(@ModelAttribute DeleteRepairManagementDTO deleteDTO) {
+        return repairManagementService.deleteRepairManagement(deleteDTO);
     }
 }
