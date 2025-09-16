@@ -35,11 +35,12 @@ public class UserController {
      */
     @PostMapping("/createUser")
     public Result<String> register(@RequestBody RegisterUser registerUser) {
-        // 修改：调用 getPassword() 方法而不是直接获取字段
+        // 修改：调用 getPassword() 方法和新增的 getRoleId()
         return userService.register(
                 registerUser.getUserName(),
                 registerUser.getUserEmail(),
-                registerUser.getPassword() // <--- 修改在这里
+                registerUser.getPassword(), // <--- 此处逻辑不变
+                registerUser.getRoleId()    // <--- 新增传递 roleId
         );
     }
 
@@ -47,9 +48,7 @@ public class UserController {
      * 通过验证信息重置密码接口 (已修改为使用DTO)
      */
     @PostMapping("/resetPasswordByVerification")
-    // 2. 方法参数修改为接收 ResetPasswordTO 对象
     public Result<String> resetPassword(@RequestBody ResetPasswordTO resetPasswordTO) {
-        // 3. 从 module 对象中获取数据传递给 service
         return userService.resetPassword(
                 resetPasswordTO.getUsername(),
                 resetPasswordTO.getEmail(),
@@ -79,14 +78,14 @@ public class UserController {
     }
 
     /**
-     * 删除用户
-     * @param userId 用户ID
+     * 删除用户 (已修改)
+     * @param targetUserId 要删除的用户ID
+     * @param currentUserId 当前登录的用户ID
      * @return 操作结果
      */
-    @DeleteMapping("/delete/{userId}")
-    public Result<String> deleteUser(@PathVariable Integer userId) {
-        return userService.deleteUser(userId);
+    @DeleteMapping("/delete") // URL修改为 /delete
+    public Result<String> deleteUser(@RequestParam Integer targetUserId, @RequestParam Integer currentUserId) {
+        return userService.deleteUser(targetUserId, currentUserId);
     }
-
 
 }

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
@@ -40,7 +41,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public Result<String> register(String userName, String userEmail, String userPasswordHash) {
+    public Result<String> register(String userName, String userEmail, String userPasswordHash, Integer roleId) {
         if (this.getOne(new QueryWrapper<User>().eq("user_name", userName)) != null) {
             return Result.fail("用户名已存在", 400);
         }
@@ -51,7 +52,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         newUser.setUserName(userName);
         newUser.setUserEmail(userEmail);
         newUser.setUserPasswordHash(Md5Password.generateMD5(userPasswordHash));
-        newUser.setRoleId(2); // 默认角色为普通用户
+        // 修改：使用传入的 roleId，如果为空则默认为2（普通用户）
+        newUser.setRoleId(roleId != null ? roleId : 2);
         boolean save = this.save(newUser);
         return save ? Result.success("注册成功") : Result.fail("注册失败", 500);
     }
@@ -73,25 +75,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return updated ? Result.success("密码重置成功！") : Result.fail("密码重置失败，请稍后再试。", 500);
     }
 
-    // --- 新增的管理方法实现 ---
-
     @Override
     public Map<String, Object> getAllUsers(UserQueryDTO query) {
         Page<UserVO> page = new Page<>(query.getPageNum(), query.getPageSize());
-
         String sortField = query.getSortField();
-        // 排序字段白名单校验，防止SQL注入
         if (!"user_created_at".equals(sortField) && !"user_id".equals(sortField)) {
-            sortField = "user_created_at"; // 默认排序字段
+            sortField = "user_created_at";
         }
         query.setSortField(sortField);
-
         IPage<UserVO> userPage = baseMapper.selectUserPage(page, query);
-
         Map<String, Object> result = new HashMap<>();
         result.put("userList", userPage.getRecords());
         result.put("count", userPage.getTotal());
-
         return result;
     }
 
@@ -101,16 +96,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (user == null) {
             return Result.fail("用户不存在", 404);
         }
-
         BeanUtils.copyProperties(updateUserDTO, user);
-
         boolean success = this.updateById(user);
         return success ? Result.success("更新成功") : Result.fail("更新失败", 500);
     }
 
+    /**
+     * 删除用户 (已修改)
+     * @param targetUserId 要删除的用户ID
+     * @param currentUserId 当前登录的用户ID
+     */
     @Override
-    public Result<String> deleteUser(Integer userId) {
-        boolean success = this.removeById(userId);
-        return success ? Result.success("删除成功") : Result.fail("删除失败", 500);
+    public Result<String> deleteUser(Integer targetUserId, Integer currentUserId) {
+        // 新增：检查用户是否在尝试删除自己的账号
+        if (Objects.equals(targetUserId, currentUserId)) {
+            return Result.fail("操作失败：不能删除当前登录的账号！", 400);
+        }
+
+        // 如果不是删除自己，则执行删除
+        boolean success = this.removeById(targetUserId);
+        return success ? Result.success("删除成功") : Result.fail("删除失败，可能用户不存在或数据库异常。", 500);
     }
 }
