@@ -9,12 +9,19 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+/**
+ * 配件信息数据访问接口 (Mapper)。
+ * 负责与 yjx_parts 表进行数据库交互。
+ */
 @Mapper
 public interface PartMapper extends BaseMapper<Part> {
 
     /**
-     * 根据条件分页查询配件列表
-     * SQL查询语句中的表名和字段名与 phone_repair.sql 文件完全对应
+     * 根据动态条件分页查询配件列表。
+     *
+     * @param page  分页对象。
+     * @param query 查询条件DTO。
+     * @return 配件的分页结果。
      */
     @Select("""
             <script>
