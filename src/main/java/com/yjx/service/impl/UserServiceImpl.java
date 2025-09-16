@@ -177,20 +177,34 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     /**
-     * 删除用户。
+     * 删除用户，并增加密码验证逻辑。
      *
-     * @param targetUserId 待删除用户的ID。
-     * @param currentUserId 当前操作员的ID。
+     * @param userIdToDelete 待删除用户的ID。
+     * @param adminId        当前操作员的ID。
+     * @param adminPassword  当前操作员的密码。
      * @return 包含操作结果的 Result 对象。
      */
     @Override
-    public Result<String> deleteUser(Integer targetUserId, Integer currentUserId) {
-        // 业务校验：用户不能删除自己
-        if (Objects.equals(targetUserId, currentUserId)) {
+    public Result<String> deleteUser(Integer userIdToDelete, Integer adminId, String adminPassword) {
+        // 校验1：用户不能删除自己的账号
+        if (Objects.equals(userIdToDelete, adminId)) {
             return Result.fail("操作失败：不能删除当前登录的账号！", 400);
         }
 
-        boolean success = this.removeById(targetUserId);
-        return success ? Result.success("删除成功") : Result.fail("删除失败，可能用户不存在或数据库异常。", 500);
+        // 校验 2：验证执行删除操作的管理员是否存在
+        User admin = this.getById(adminId);
+        if (admin == null) {
+            return Result.fail("操作员用户不存在，无法验证权限。", 404);
+        }
+
+        // 校验 3：验证操作员的密码是否正确
+        String encryptedPassword = Md5Password.generateMD5(adminPassword);
+        if (!encryptedPassword.equals(admin.getUserPasswordHash())) {
+            return Result.fail("密码错误，验证失败。", 401);
+        }
+
+        // 校验通过后，执行删除操作
+        boolean success = this.removeById(userIdToDelete);
+        return success ? Result.success("删除成功") : Result.fail("删除失败，可能目标用户不存在。", 500);
     }
 }

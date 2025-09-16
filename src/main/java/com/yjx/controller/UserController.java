@@ -99,8 +99,12 @@ public class UserController {
      * @param currentUserId 执行此操作的当前登录用户的ID，用于权限校验。
      * @return 表示操作成功或失败的结果对象。
      */
-    @DeleteMapping("/delete")
-    public Result<String> deleteUser(@RequestParam Integer targetUserId, @RequestParam Integer currentUserId) {
-        return userService.deleteUser(targetUserId, currentUserId);
+    @PostMapping("/delete") // 【核心修改】请求方式改为 POST
+    public Result<String> deleteUser(@RequestBody DeleteUserDTO deleteUserDTO) {
+        return userService.deleteUser(
+                deleteUserDTO.getUserIdToDelete(),
+                deleteUserDTO.getAdminId(),
+                deleteUserDTO.getAdminPassword()
+        );
     }
 }

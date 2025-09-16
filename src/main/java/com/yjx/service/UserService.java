@@ -62,11 +62,12 @@ public interface UserService extends IService<User> {
     Result<String> updateUser(UpdateUserDTO updateUserDTO);
 
     /**
-     * 删除用户。
+     * 删除用户（需要密码验证）。
      *
-     * @param targetUserId 待删除用户的ID。
-     * @param currentUserId 当前操作员的ID。
+     * @param userIdToDelete 待删除用户的ID。
+     * @param adminId        当前操作员的ID。
+     * @param adminPassword  当前操作员的密码。
      * @return 包含操作结果的 Result 对象。
      */
-    Result<String> deleteUser(Integer targetUserId, Integer currentUserId);
+    Result<String> deleteUser(Integer userIdToDelete, Integer adminId, String adminPassword);
 }
