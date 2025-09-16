@@ -15,6 +15,7 @@ import com.yjx.util.Md5Password;
 import com.yjx.util.Result;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,23 +37,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public LoginUser login(String usernameOrEmail, String password) {
-        // 1. 构造查询条件，支持用户名或邮箱登录
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_name", usernameOrEmail).or().eq("user_email", usernameOrEmail);
         User user = this.getOne(queryWrapper);
 
-        // 2. 如果数据库中不存在该用户，直接返回null
         if (user == null) {
             return null;
         }
 
-        // 3. 将用户输入的明文密码通过MD5加密，与数据库中存储的哈希值进行比对
         String encryptedPassword = Md5Password.generateMD5(password);
         if (!encryptedPassword.equals(user.getUserPasswordHash())) {
-            return null; // 密码不匹配
+            return null;
         }
 
-        // 4. 验证通过，封装需要返回给前端的用户信息到LoginUser对象
         LoginUser loginUser = new LoginUser();
         loginUser.setUserId(user.getUserId());
         loginUser.setUserName(user.getUserName());
@@ -73,23 +70,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public Result<String> register(String userName, String userEmail, String userPasswordHash, Integer roleId) {
-        // 检查用户名是否已存在
         if (this.getOne(new QueryWrapper<User>().eq("user_name", userName)) != null) {
-            return Result.fail("用户名已存在", 400);
+            return Result.fail("用户名已存在", 409);
         }
-        // 检查邮箱是否已存在
         if (this.getOne(new QueryWrapper<User>().eq("user_email", userEmail)) != null) {
-            return Result.fail("邮箱已存在", 400);
+            return Result.fail("邮箱已存在", 409);
         }
 
-        // 创建新的用户实体
         User newUser = new User();
         newUser.setUserName(userName);
         newUser.setUserEmail(userEmail);
         newUser.setUserPasswordHash(Md5Password.generateMD5(userPasswordHash));
-        newUser.setRoleId(roleId != null ? roleId : 2); // 如果roleId未提供，默认为普通用户
+        newUser.setRoleId(roleId != null ? roleId : 2);
 
-        // 保存到数据库
         boolean save = this.save(newUser);
         return save ? Result.success("注册成功") : Result.fail("注册失败", 500);
     }
@@ -104,7 +97,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public Result<String> resetPassword(String username, String email, String newPassword) {
-        // 查询用户名和邮箱是否匹配的唯一用户
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_name", username);
         queryWrapper.eq("user_email", email);
@@ -114,7 +106,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return Result.fail("用户名与邮箱不匹配，请检查后重试。", 400);
         }
 
-        // 更新密码
         user.setUserPasswordHash(Md5Password.generateMD5(newPassword));
         boolean updated = this.updateById(user);
 
@@ -131,10 +122,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public Map<String, Object> getAllUsers(UserQueryDTO query) {
         Page<UserVO> page = new Page<>(query.getPageNum(), query.getPageSize());
 
-        // 安全校验：防止SQL注入，只允许特定的排序字段
         String sortField = query.getSortField();
         if (!"user_created_at".equals(sortField) && !"user_id".equals(sortField)) {
-            sortField = "user_created_at"; // 默认排序字段
+            sortField = "user_created_at";
         }
         query.setSortField(sortField);
 
@@ -146,18 +136,41 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     /**
-     * 更新用户信息。
+     * 更新用户信息，并增加对用户名和邮箱的唯一性校验。
      *
      * @param updateUserDTO 包含待更新用户信息的 DTO。
      * @return 包含操作结果的 Result 对象。
      */
     @Override
     public Result<String> updateUser(UpdateUserDTO updateUserDTO) {
+        // 校验1：检查待更新的用户是否存在
         User user = this.getById(updateUserDTO.getUserId());
         if (user == null) {
             return Result.fail("用户不存在", 404);
         }
-        // 使用Spring的工具类，将DTO中的非空属性值复制到POJO对象中
+
+        // 业务校验：检查更新后的用户名或邮箱是否与系统内其他用户冲突。
+        // 校验2：检查用户名是否被修改，且新用户名是否已存在
+        if (StringUtils.hasText(updateUserDTO.getUserName()) && !user.getUserName().equals(updateUserDTO.getUserName())) {
+            QueryWrapper<User> usernameWrapper = new QueryWrapper<>();
+            usernameWrapper.eq("user_name", updateUserDTO.getUserName());
+            usernameWrapper.ne("user_id", updateUserDTO.getUserId()); // 排除当前用户自身
+            if (this.baseMapper.exists(usernameWrapper)) {
+                return Result.fail("更新失败，该用户名已存在", 409);
+            }
+        }
+
+        // 校验3：检查邮箱是否被修改，且新邮箱是否已存在
+        if (StringUtils.hasText(updateUserDTO.getUserEmail()) && !user.getUserEmail().equals(updateUserDTO.getUserEmail())) {
+            QueryWrapper<User> emailWrapper = new QueryWrapper<>();
+            emailWrapper.eq("user_email", updateUserDTO.getUserEmail());
+            emailWrapper.ne("user_id", updateUserDTO.getUserId()); // 排除当前用户自身
+            if (this.baseMapper.exists(emailWrapper)) {
+                return Result.fail("更新失败，该邮箱已被注册", 409);
+            }
+        }
+
+        // 复制属性并执行更新
         BeanUtils.copyProperties(updateUserDTO, user);
         boolean success = this.updateById(user);
         return success ? Result.success("更新成功") : Result.fail("更新失败", 500);

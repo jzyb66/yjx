@@ -10,9 +10,21 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+/**
+ * 用户信息数据访问接口 (Mapper)。
+ * 负责与 yjx_user 表进行数据库交互。
+ */
 @Mapper
 public interface UserMapper extends BaseMapper<User> {
 
+    /**
+     * 根据动态条件分页查询用户视图对象(VO)列表。
+     * 此查询会连接角色表(yjx_role)以获取角色名称。
+     *
+     * @param page  分页对象。
+     * @param query 查询条件DTO。
+     * @return 用户VO的分页结果。
+     */
     @Select("""
             <script>
             SELECT
