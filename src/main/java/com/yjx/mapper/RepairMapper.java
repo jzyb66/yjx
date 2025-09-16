@@ -11,9 +11,21 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
+/**
+ * 维修请求数据访问接口 (Mapper)。
+ * 负责与 yjx_repair_request 表进行数据库交互。
+ */
 @Mapper
 public interface RepairMapper extends BaseMapper<Repair> {
 
+    /**
+     * 根据动态条件分页查询维修请求列表。
+     * SQL语句连接了用户表以获取接待员姓名，并包含权限控制逻辑。
+     *
+     * @param page 分页对象。
+     * @param query 查询条件DTO。
+     * @return 维修请求的分页结果。
+     */
     @Select("""
         <script>
         SELECT
@@ -59,13 +71,18 @@ public interface RepairMapper extends BaseMapper<Repair> {
             @Param("query") RepairQueryDTO query
     );
 
+    /**
+     * 查询所有角色为接待员(role_id = 3)的用户。
+     *
+     * @return 接待员信息列表。
+     */
     @Select("""
-            SELECT
-                user_id AS userId,
-                user_name As userName
-            FROM yjx_user
-    WHERE role_id = 3
-    GROUP BY user_id, user_name
-""")
+        SELECT
+            user_id AS userId,
+            user_name AS userName
+        FROM yjx_user
+        WHERE role_id = 3
+        GROUP BY user_id, user_name
+    """)
     List<ReceptionistVO> getAllReceptionist();
 }

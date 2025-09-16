@@ -13,17 +13,24 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 维修请求控制器
+ * 维修请求API控制器。
+ * 负责处理客户维修订单的创建、查询和删除等请求，是前台接待功能的核心入口。
  */
 @RestController
 @RequestMapping("/repair")
 public class RepairController {
 
+    /**
+     * 自动注入维修服务层的Bean。
+     */
     @Autowired
     private RepairService repairService;
 
     /**
-     * 获取所有维修请求（支持分页和搜索）
+     * 根据多种条件组合查询维修请求列表，支持分页。
+     *
+     * @param repairQueryDTO 封装了查询条件的DTO对象。
+     * @return 包含维修单列表和总记录数的结果Map。
      */
     @GetMapping("/getAllRepair")
     public Result<Map<String, Object>> getAllRepair(@ModelAttribute RepairQueryDTO repairQueryDTO){
@@ -31,7 +38,10 @@ public class RepairController {
     }
 
     /**
-     * 获取所有接待员
+     * 获取系统中所有角色为“接待员”的用户列表。
+     * 用于前端创建订单时选择接待人员。
+     *
+     * @return 接待员信息列表 (VO)。
      */
     @GetMapping("/getAllReceptionist")
     public Result<List<ReceptionistVO>> getAllReceptionist() {
@@ -40,8 +50,11 @@ public class RepairController {
     }
 
     /**
-     * 新增维修订单 (修改点)
-     * 使用 CreateRepairDTO 接收 JSON 请求体
+     * 新增一个维修订单。
+     * 请求体应为JSON格式。
+     *
+     * @param createRepairDTO 包含创建维修单所需信息的DTO对象。
+     * @return 表示操作成功或失败的结果对象。
      */
     @PostMapping("/createRepair")
     public Result<Void> createRepair(@RequestBody CreateRepairDTO createRepairDTO) {
@@ -49,9 +62,11 @@ public class RepairController {
     }
 
     /**
-     * 删除维修订单 (修改点)
-     * 使用 DeleteRepairDTO 接收 URL 参数
-     * 注意：这里使用 @ModelAttribute 而不是 @RequestBody 是为了兼容您前端现有的 axios 用法 (params)
+     * 删除一个维修订单。
+     * 此操作需要提供用户密码进行验证。
+     *
+     * @param deleteRepairDTO 包含待删除维修单ID和用户验证信息的DTO对象。
+     * @return 表示操作成功或失败的结果对象。
      */
     @PostMapping("/deleteRepair")
     public Result<Void> deleteRepair(@ModelAttribute DeleteRepairDTO deleteRepairDTO) {

@@ -22,6 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 维修请求服务接口的实现类。
+ */
 @Service
 public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> implements RepairService {
 
@@ -31,13 +34,20 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     @Autowired
     private UserMapper userMapper;
 
+    /**
+     * 根据条件获取维修请求列表，并进行分页。
+     *
+     * @param repairQueryDTO 包含查询条件的DTO。
+     * @return 封装了查询结果和总数的Result对象。
+     */
     @Override
     public Result<Map<String, Object>> getAllRepairListByCondition(RepairQueryDTO repairQueryDTO) {
-        // --- 修改点：规范化分页和排序参数 ---
+        // 1. 处理并规范化分页参数
         int pageNum = repairQueryDTO.getPageNum() == null || repairQueryDTO.getPageNum() < 1 ? 1 : repairQueryDTO.getPageNum();
         int pageSize = repairQueryDTO.getPageSize() == null || repairQueryDTO.getPageSize() < 1 ? 10 : repairQueryDTO.getPageSize();
         Page<Repair> page = new Page<>(pageNum, pageSize);
 
+        // 2. 处理并规范化排序参数
         if (repairQueryDTO.getSortField() == null || repairQueryDTO.getSortField().trim().isEmpty()) {
             repairQueryDTO.setSortField("createdAt");
         }
@@ -45,83 +55,79 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
             repairQueryDTO.setSortOrder("desc");
         }
 
-        // --- 修改点：直接传递整个Module对象到Mapper ---
+        // 3. 调用Mapper执行查询
         IPage<Repair> resultPage = repairMapper.selectRepairByCondition(page, repairQueryDTO);
 
+        // 4. 封装返回结果
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("repairRequest", resultPage.getRecords());
         responseMap.put("count", resultPage.getTotal());
         return Result.success(responseMap);
     }
 
-
+    /**
+     * 获取所有角色为接待员的用户。
+     *
+     * @return 接待员信息列表。
+     */
     @Override
     public List<ReceptionistVO> getAllReceptionist() {
         return repairMapper.getAllReceptionist();
     }
 
-
     /**
-     * 新增逻辑 (修改点)
-     * 从 Module 映射到 Entity
+     * 创建新的维修请求订单。
+     *
+     * @param createRepairDTO 包含订单信息的DTO。
+     * @return 表示操作结果的Result对象。
      */
     @Override
     public Result<Void> createRepair(CreateRepairDTO createRepairDTO) {
-        // 1. 创建数据库实体对象
+        // 1. 将DTO转换为POJO实体
         Repair repair = new Repair();
-
-        // 2. 从 Module 中获取数据，设置到实体对象中
         repair.setUserId(createRepairDTO.getUserId());
         repair.setReceptionistId(createRepairDTO.getReceptionistId());
         repair.setPhoneModel(createRepairDTO.getPhoneModel());
         repair.setPhoneIssueDescription(createRepairDTO.getPhoneIssueDescription());
 
-        // 3. 设置服务器端生成的默认值
-        repair.setRequestId(null); // 强制使用数据库自增ID
-        repair.setRequestStatus(1);
+        // 2. 设置服务器端生成的默认值
+        repair.setRequestStatus(1); // 默认为“待维修”状态
         repair.setCreatedAt(LocalDateTime.now());
         repair.setUpdatedAt(LocalDateTime.now());
 
-        // 4. 保存到数据库
+        // 3. 保存到数据库
         boolean isSuccess = this.save(repair);
 
-        if (isSuccess) {
-            return Result.success();
-        } else {
-            return Result.fail("创建订单失败。", 500);
-        }
+        return isSuccess ? Result.success() : Result.fail("创建订单失败。", 500);
     }
 
     /**
-     * 删除逻辑 (修改点)
-     * 从 Module 中获取参数
+     * 删除维修请求订单，需密码验证。
+     *
+     * @param deleteRepairDTO 包含订单ID和用户验证信息的DTO。
+     * @return 表示操作结果的Result对象。
      */
     @Override
     public Result<Void> deleteRepair(DeleteRepairDTO deleteRepairDTO) {
-        // 从 Module 对象中获取参数
         Integer repairId = deleteRepairDTO.getRepairId();
         Integer userId = deleteRepairDTO.getUserId();
         String password = deleteRepairDTO.getPassword();
 
-        // 1. 根据 userId 查找用户
+        // 1. 根据 userId 查找用户是否存在
         User user = userMapper.selectById(userId);
         if (user == null) {
             return Result.fail("用户不存在。", 404);
         }
 
-        // 2. 验证密码
+        // 2. 验证密码是否正确
         String encryptedPassword = Md5Password.generateMD5(password);
         if (!encryptedPassword.equals(user.getUserPasswordHash())) {
             return Result.fail("密码错误。", 401);
         }
 
-        // 3. 执行删除
+        // 3. 执行删除操作
         boolean isSuccess = this.removeById(repairId);
 
-        if (isSuccess) {
-            return Result.success();
-        } else {
-            return Result.fail("删除订单失败。", 500);
-        }
+        return isSuccess ? Result.success() : Result.fail("删除订单失败。", 500);
     }
 }
