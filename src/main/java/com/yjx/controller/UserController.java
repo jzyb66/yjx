@@ -95,11 +95,10 @@ public class UserController {
     /**
      * 删除指定ID的用户。
      *
-     * @param targetUserId 要删除的用户ID。
-     * @param currentUserId 执行此操作的当前登录用户的ID，用于权限校验。
+     * @param deleteUserDTO 包含要删除的用户ID、执行操作的管理员ID及密码的DTO对象。
      * @return 表示操作成功或失败的结果对象。
      */
-    @PostMapping("/delete") // 【核心修改】请求方式改为 POST
+    @PostMapping("/delete")
     public Result<String> deleteUser(@RequestBody DeleteUserDTO deleteUserDTO) {
         return userService.deleteUser(
                 deleteUserDTO.getUserIdToDelete(),
@@ -107,4 +106,5 @@ public class UserController {
                 deleteUserDTO.getAdminPassword()
         );
     }
+
 }
