@@ -1,0 +1,31 @@
+# 文件名: .github/workflows/sync-gitee.yml
+name: Sync Gitee To GitHub
+
+on:
+  schedule:
+    # 每小时执行一次，你可以根据需求调整 cron 表达式
+    - cron: '0 * * * *'
+  workflow_dispatch:
+    # 添加一个手动触发按钮
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync with Gitee
+        uses: Yikun/hub-mirror-action@v1.2 # 使用一个专门做同步的 Action
+        with:
+          # 必填，需要同步的 Gitee 源仓库
+          src: 'gitee/jzyb66/实训yjx'
+          # 必填，需要同步到的 GitHub 目标仓库
+          dst: 'github/jzyb66/yjx'
+          # 必填，用于推送到 GitHub 的 Token
+          # GITHUB_TOKEN 是 GitHub Actions 自动生成的，无需手动创建
+          dst_key: ${{ secrets.GITHUB_TOKEN }}
+          # 必填，Gitee public 仓库建议设置为 true
+          # 如果是私有仓库，需要设置 Gitee 的 personal access token 并配置到 secrets 中
+          static_list: "repo"
+          # 可选，强制使用 https 进行 clone
+          force_update: true
+          # 可选，同步所有分支
+          sync_tags: true
